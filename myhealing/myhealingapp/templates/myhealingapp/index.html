@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MYHEALING🌿</title>
+  </head>
+  <body>
+    {% if check %}
+    <div>
+      <h1>카카오 로그아웃</h1>
+      <form action="/kakaoLogout" method="get">
+        <input type="submit" value="카카오로그아웃 및 연결 끊기" />
+      </form>
+    </div>
+    {% else %}
+    <div>
+      <h1>카카오 로그인</h1>
+      <form action="/kakaoLoginLogic" method="GET">
+        <input type="submit" value="카카오로그인" />
+      </form>
+    </div>
+    {% endif %}
+  </body>
+</html>
