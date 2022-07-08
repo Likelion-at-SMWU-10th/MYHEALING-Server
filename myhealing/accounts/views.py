@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-import requests
+import requests, json
 
 def kakaoLoginLogic(request):
     _restApiKey = '0f35fc2805b692fffd8d94ff011d731a'
@@ -49,4 +49,20 @@ def kakaoLogout(request):
 def kakaoGetUserInfo(access_token):
     _user_info_json = requests.get('https://kapi.kakao.com/v2/user/me', headers={"Authorization": f'Bearer ${access_token}'})
     _user_info_result = _user_info_json.json()
+    _id_token = _user_info_result['id']
+    _nickname = _user_info_result['kakao_account']['profile']['nickname']
+    if 'profile_image_url' in  _user_info_result['kakao_account']['profile']:
+        _photo_url =  _user_info_result['kakao_account']['profile']['profile_image_url']
+    else:
+        _photo_url = None
     
+    if 'email' in _user_info_result['kakao_account']:
+        _email =  _user_info_result['kakao_account']['email']
+    else:
+        _email = None
+    
+    # DB에 저장
+    # 1) DB에 같은 id_token이 이미 존재하는 경우 > 로그인 & JWT 토큰 발행
+
+
+    # 2) DB에 같은 id_token이 없는 경우 > 회원 가입 & JWT 토큰 발행
