@@ -21,7 +21,12 @@ def kakaoLoginLogicRedirect(request):
     _url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={_restApiKey}&redirect_uri={_redirect_uri}&code={_qs}'
     _res = requests.post(_url)
     _result = _res.json()
-    request.session['access_token'] = _result['access_token']
+    _access_token = _result['access_token']
+
+    # 사용자 정보 받아오기
+    kakaoGetUserInfo(_access_token)
+
+    request.session['access_token'] = _access_token
     request.session.modified = True
     return render(request, 'myhealingapp/loginSuccess.html')
 
@@ -46,3 +51,8 @@ def kakaoLogout(request):
         return render(request, 'myhealingapp/logoutSuccess.html')
     else:
         return render(request, 'myhealingapp/logoutError.html')
+
+def kakaoGetUserInfo(access_token):
+    _user_info_json = requests.get('https://kapi.kakao.com/v2/user/me', headers={"Authorization": f'Bearer ${_access_token}'})
+    _user_info_result = _user_info_json.json()
+    
