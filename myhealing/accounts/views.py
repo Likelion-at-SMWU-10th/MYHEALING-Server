@@ -21,8 +21,8 @@ def kakaoLoginLogicRedirect(request):
     # 사용자 정보 받아오기
     kakaoGetUserInfo(_access_token)
 
-    request.session['access_token'] = _access_token
-    request.session.modified = True
+    request.session['access_token'] = _access_token #**
+    request.session.modified = True #**
     return render(request, 'accounts/loginSuccess.html')
 
 def kakaoLogout(request):
@@ -42,7 +42,7 @@ def kakaoLogout(request):
     _res = requests.post(_url, headers=_header)
     _result = _res.json()
     if _result.get('id'):
-        del request.session['access_token']
+        del request.session['access_token'] #**
         return render(request, 'accounts/logoutSuccess.html')
     else:
         return render(request, 'accounts/logoutError.html')
@@ -51,6 +51,10 @@ def kakaoGetUserInfo(access_token):
     _user_info_json = requests.get('https://kapi.kakao.com/v2/user/me', headers={"Authorization": f'Bearer ${access_token}'})
     _user_info_result = _user_info_json.json()
     _id_token = _user_info_result['id']
+
+    # DB에 저장
+    # TODO: _id_token이용하여 DB 조회하기
+    # TODO: 1) DB에 같은 id_token이 없는 경우 > 회원 가입 & JWT 토큰 발행
     _nickname = _user_info_result['kakao_account']['profile']['nickname']
     if 'profile_image_url' in  _user_info_result['kakao_account']['profile']:
         _photo_url =  _user_info_result['kakao_account']['profile']['profile_image_url']
@@ -62,8 +66,5 @@ def kakaoGetUserInfo(access_token):
     else:
         _email = None
     
-    # DB에 저장
-    # 1) DB에 같은 id_token이 이미 존재하는 경우 > 로그인 & JWT 토큰 발행
+    # TODO: 2) DB에 같은 id_token이 이미 존재하는 경우 > 로그인 & JWT 토큰 발행
 
-
-    # 2) DB에 같은 id_token이 없는 경우 > 회원 가입 & JWT 토큰 발행
