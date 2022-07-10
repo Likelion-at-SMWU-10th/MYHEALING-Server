@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.account', # 가입 계정 관리
     'allauth.socialaccount', # 소셜 가입계정 관리
     'allauth.socialaccount.providers.naver', # 어떤 소셜을 사용하는지에 따라 다르게 작성
+    'allauth.socialaccount.providers.kakao',
 ]
 
 MIDDLEWARE = [
@@ -142,4 +143,5 @@ AUTHENTICATION_BACKENDS = (
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = '/'
+# allauth 설정
+LOGIN_REDIRECT_URL = '/' # 로그인 성공 시 리다이렉트 URL
