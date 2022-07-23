@@ -32,3 +32,16 @@ class GuideDetail(APIView):
         guide = self.get_object(pk)
         serializer = GuideSerializer(guide)
         return Response(serializer.data)
+
+    def put(self, request, pk):
+        guide = self.get_object(pk)
+        serializer = GuideSerializer(guide, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        guide = self.get_object(pk)
+        guide.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
