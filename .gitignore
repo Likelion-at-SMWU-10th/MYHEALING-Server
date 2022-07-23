@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
 
 myvenv/
+myhealing/media/
 
 ### Django ###
 *.log

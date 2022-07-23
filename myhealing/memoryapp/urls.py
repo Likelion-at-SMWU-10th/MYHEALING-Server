@@ -1,6 +1,9 @@
 from django.urls import path
-from memoryapp import views
+from django.conf import settings
+from django.conf.urls.static import static
+from .views import *
 
 urlpatterns = [
-    path('', views.home, name='home'),
-]
+    path('', MemoryList.as_view()),
+    path('images/<int:memory_id>', MemoryImageList.as_view()),
+] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
