@@ -10,6 +10,7 @@ from .models import *
 from .serializers import *
 
 import os
+import shutil
 
 class MemoryList(APIView):
     # /memory
@@ -46,13 +47,13 @@ class MemoryDetail(APIView):
 
     # /memory/<int:memory_id>
     def put(self, request, memory_id):
-        # TODO: 1) 기본 내용(title, body, place, scope, thumbnail) 수정
+        # 1) 기본 내용(title, body, place, scope, thumbnail) 수정
         memory = self.get_object(memory_id)
         file_change_check = request.POST.get('file_change', False)
         serializer = MemorySerializer(memory, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # TODO: 2) 사진 변경이 있는 경우 이미지는 전체 삭제 후 다시 저장
+            # 2) 사진 변경이 있는 경우 이미지는 전체 삭제 후 다시 저장
             # *사진 변경이 있는 경우 - 1. 기존 사진이 없다가 생기는 경우, 2. 사진의 개수 혹은 다른 사진으로 변경, 3. 사진 삭제
             # 2-1) 전체 삭제
             if file_change_check:
@@ -60,13 +61,20 @@ class MemoryDetail(APIView):
                 if images: # 기존 사진이 없는 경우 delete 진행 X
                     for image in images:
                         image.delete()
-                    os.remove(os.path.join(settings.MEDIA_ROOT, 'img/memory', str(memory_id)).replace('\\','/'))
+                    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'img/memory', str(memory_id)).replace('\\','/'), ignore_errors=True)
             # 2-2) 다시 저장
             images_data = request.FILES.getlist('image')
             for image_data in images_data:
                 MemoryImage.objects.create(memory=memory, image=image_data)
             return Response(data=serializer.data)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    # /memory/<int:memory_id>
+    def delete(self, request, memory_id):
+        memory = self.get_object(memory_id)
+        memory.delete()
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'img/memory', str(memory_id)).replace('\\','/'), ignore_errors=True)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class MemoryImageList(APIView):
     # /memory/images/<int:memory_id>
