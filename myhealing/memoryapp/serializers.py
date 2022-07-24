@@ -11,7 +11,17 @@ class MemorySerializer(serializers.ModelSerializer):
     images = MemoryImageSerializer(many=True, read_only=True)
     class Meta:
         model = Memory
-        fields = ('id', 'updated_at', 'date', 'place', 'title', 'body', 'scope', 'thumbnail', 'images')
+        fields = (
+            'id', 
+            'updated_at', 
+            'date', 
+            'place', 
+            'title', 
+            'body', 
+            'scope', 
+            'thumbnail', 
+            'images'
+        )
 
 class MemoryListSerializer(serializers.ModelSerializer):
     class Meta:
