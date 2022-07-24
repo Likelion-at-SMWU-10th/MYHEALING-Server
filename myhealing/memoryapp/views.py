@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from rest_framework import status
@@ -17,11 +18,6 @@ class MemoryList(APIView):
     
     # /memory
     def post(self, request, *args, **kwargs):
-        # serializer = MemorySerializer(data=request.data, files=request.FILES)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         images_data = request.FILES.getlist('image')
         serializer = MemorySerializer(data=request.data)
         if serializer.is_valid():
@@ -31,6 +27,19 @@ class MemoryList(APIView):
                 MemoryImage.objects.create(memory=memory, image=image_data)
             return Response(data=serializer.data)
         return Response(serializer.error, status.HTTP_400_BAD_REQUEST)
+
+class MemoryDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Memory.objects.get(pk=pk)
+        except Memory.DoesNotExist:
+            raise Http404
+
+    # /memory/<int:memory_id>
+    def get(self, request, memory_id):
+        memory = self.get_object(memory_id)
+        serializer = MemorySerializer(memory)
+        return Response(serializer.data)
 
 class MemoryImageList(APIView):
     # /memory/images/<int:memory_id>

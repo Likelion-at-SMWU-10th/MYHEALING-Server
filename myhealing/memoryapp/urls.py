@@ -5,5 +5,6 @@ from .views import *
 
 urlpatterns = [
     path('', MemoryList.as_view()),
+    path('<int:memory_id>', MemoryDetail.as_view()),
     path('images/<int:memory_id>', MemoryImageList.as_view()),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

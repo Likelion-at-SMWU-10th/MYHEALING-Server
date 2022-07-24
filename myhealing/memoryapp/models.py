@@ -23,6 +23,11 @@ class Memory(models.Model):
 
 class MemoryImage(models.Model):
     memory = models.ForeignKey(Memory, on_delete=models.CASCADE)
-    # 'MEDIA_URL/img/memory/20220723/xxx.png' 문자열로 DB 필드 저장
-    image = models.ImageField(upload_to = 'img/memory/%Y%m%d')
+
+    def image_upload_path(instance, filename):
+        return 'img/memory/{0}/{1}'.format(instance.memory.id, filename)
+
+    # 'MEDIA_URL/img/memory/2022/07/23/{memory.pk}/xxx.png' 문자열로 DB 필드 저장
+    image = models.ImageField(upload_to = image_upload_path)
+    
     
