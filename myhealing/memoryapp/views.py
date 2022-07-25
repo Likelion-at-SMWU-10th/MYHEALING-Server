@@ -62,10 +62,10 @@ class MemoryDetail(APIView):
                     for image in images:
                         image.delete()
                     shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'img/memory', str(memory_id)).replace('\\','/'), ignore_errors=True)
-            # 2-2) 다시 저장
-            images_data = request.FILES.getlist('image')
-            for image_data in images_data:
-                MemoryImage.objects.create(memory=memory, image=image_data)
+                # 2-2) 다시 저장
+                images_data = request.FILES.getlist('image')
+                for image_data in images_data:
+                    MemoryImage.objects.create(memory=memory, image=image_data)
             return Response(data=serializer.data)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 

@@ -13,6 +13,7 @@ class MemorySerializer(serializers.ModelSerializer):
         model = Memory
         fields = (
             'id', 
+            'created_at',
             'updated_at', 
             'date', 
             'place', 
@@ -26,4 +27,4 @@ class MemorySerializer(serializers.ModelSerializer):
 class MemoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Memory
-        fields = ('id', 'updated_at', 'title')
+        fields = ('id', 'created_at', 'title')
