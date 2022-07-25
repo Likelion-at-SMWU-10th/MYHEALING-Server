@@ -15,7 +15,7 @@ class GuideList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = GuideSerializer(data=request.data)
+        serializer = GuideListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
