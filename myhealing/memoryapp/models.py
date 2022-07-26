@@ -22,7 +22,7 @@ class Memory(models.Model):
         return self.body[:30]
 
 class MemoryImage(models.Model):
-    memory = models.ForeignKey(Memory, on_delete=models.CASCADE)
+    memory = models.ForeignKey(Memory, on_delete=models.CASCADE, related_name="images")
 
     def image_upload_path(instance, filename):
         return 'img/memory/{0}/{1}'.format(instance.memory.id, filename)
