@@ -1,6 +1,8 @@
 from pathlib import Path
 from telnetlib import AUTHENTICATION
 
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,6 +19,10 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# MEDIA FILES
+MEDIA_URL = '/media/'
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -26,20 +32,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    'myhealingapp',
-    'login',
-    
-    # sites : 사이트 정보 설정하기 위해 필요
-    'django.contrib.sites',
-    
-    # allauth 관련 앱 목록
-    'allauth',
-    'allauth.account', # 가입 계정 관리
-    'allauth.socialaccount', # 소셜 가입계정 관리
-    'allauth.socialaccount.providers.naver', # 어떤 소셜을 사용하는지에 따라 다르게 작성
-    'allauth.socialaccount.providers.kakao',
-    'allauth.socialaccount.providers.google',
+    'guideapp',
+    'memoryapp',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
