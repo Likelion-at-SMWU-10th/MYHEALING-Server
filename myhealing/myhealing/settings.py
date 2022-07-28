@@ -2,6 +2,7 @@ from pathlib import Path
 from telnetlib import AUTHENTICATION
 
 import os
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'guideapp',
     'memoryapp',
-    'rest_framework'
+    'accounts',
+    
+    'django.contrib.sites',
+    'accounts.apps.AccountsConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +130,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SITE_ID = 1
+
+# secret key → secrets.json
+secret_file = os.path.join(BASE_DIR, "secrets.json")
+secrets = None
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+SECRET_KEY = secrets['SECRET_KEY']
+
+SOCIAL_OUTH_CONFIG = {
+    "KAKAO_REST_API_KEY": secrets['KAKAO_REST_API_KEY'],
+    "KAKAO_REDIRECT_URI": secrets['KAKAO_REDIRECT_URI'],
+    "KAKAO_SECRET_KEY": secrets['KAKAO_SECRET_KEY']
+}
