@@ -3,6 +3,7 @@ from telnetlib import AUTHENTICATION
 
 import os
 import json
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,13 +37,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # site 설정
+    'django.contrib.sites',
+
+    # 생성한 앱
     'guideapp',
     'memoryapp',
     'accounts',
     
-    'django.contrib.sites',
-    'accounts.apps.AccountsConfig',
+    # 설치한 라이브러리
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
 ]
 
 MIDDLEWARE = [
@@ -129,11 +142,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# SITE_ID = 1
+SITE_ID = 1
 
 # secret key → secrets.json
 secret_file = os.path.join(BASE_DIR, "secrets.json")
 secrets = None
+
 with open(secret_file) as f:
     secrets = json.loads(f.read())
 

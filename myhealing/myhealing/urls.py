@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('memory/', include('memoryapp.urls')),
     path('guide/', include('guideapp.urls')),
+    path('kakao/', include('accounts.urls')),
 ]
 
 urlpatterns += \
