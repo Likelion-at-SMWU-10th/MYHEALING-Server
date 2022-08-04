@@ -14,9 +14,21 @@ class Guide(models.Model):
     address = models.CharField(max_length=50, default = '')
     views = models.IntegerField(default = 0)
     thumbnail = models.ImageField(upload_to='img/guide/', height_field=None, width_field=None, max_length=100, blank=True)
+    tag = models.ManyToManyField('Tag')
 
     def __str__(self):
         return self.title
 
     def summary(self):
         return self.body[:30]
+
+class Tag(models.Model):
+    class Sort(models.TextChoices):
+        MOOD = 'MOOD'
+        WEATHER = 'WEATHER'
+        WHO = 'WHO'
+        REGION = 'REGION'
+        ETC = 'ETC'
+    
+    sort = models.CharField(max_length=7, choices=Sort.choices, default=Sort.ETC)
+    title = models.CharField(max_length=30)
