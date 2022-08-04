@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'guideapp',
     'memoryapp',
-    'rest_framework'
+    'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SITE_ID = 1
+
+# Rest-framework
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}

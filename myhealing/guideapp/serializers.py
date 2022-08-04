@@ -5,7 +5,7 @@ class GuideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guide
         fields = ('id', 'creator_id', 'date', 'created_at', 'updated_at', 'place',
-        'cost', 'title', 'body', 'address', 'views', 'thumbnail')
+        'cost', 'title', 'body', 'address', 'views', 'thumbnail', 'tag')
 
 class GuideListSerializer(serializers.ModelSerializer):
     class Meta:

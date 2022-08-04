@@ -45,3 +45,20 @@ class GuideDetail(APIView):
         guide = self.get_object(pk)
         guide.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class GuideSearch(APIView):
+    def get(self, request):
+        scope = request.GET.get('filter', '') # title, body, mix
+        query = request.GET.get('query', '')
+        if query:
+            if scope == 'title': # 제목만
+                guide_objects = Guide.objects.filter(title__contains = query).order_by("-updated_at")
+            elif scope == 'body': # 본문만
+                guide_objects = Guide.objects.filter(body__contains = query).order_by("-updated_at")
+            else: # 제목 + 본문
+                guide_objects = (Guide.objects.filter(title__contains=query) | Guide.objects.filter(body__contains=query)).order_by("-updated_at")
+            
+            serializer = GuideListSerializer(guide_objects, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
