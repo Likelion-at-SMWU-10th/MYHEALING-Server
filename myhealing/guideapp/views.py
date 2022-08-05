@@ -2,18 +2,29 @@ import json
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
-from django.db.models import Count
 
 from .serializers import GuideSerializer, GuideListSerializer
 from .models import Guide
+from .pagination import PaginationHandlerMixin
 
 # Create your views here.
-class GuideList(APIView):
+class MemoPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
+
+class GuideList(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = GuideListSerializer
+
     def get(self, request):
         guides = Guide.objects.all()
 
-        serializer = GuideListSerializer(guides, many=True)
+        page = self.paginate_queryset(guides)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(guides, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -48,7 +59,10 @@ class GuideDetail(APIView):
         guide.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class GuideSearch(APIView):
+class GuideSearch(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = GuideListSerializer
+
     def get(self, request):
         scope = request.GET.get('filter', '') # title, body, mix
         query = request.GET.get('query', '')
@@ -60,12 +74,20 @@ class GuideSearch(APIView):
             else: # 제목 + 본문
                 guide_objects = (Guide.objects.filter(title__icontains=query) | Guide.objects.filter(body__icontains=query)).order_by("-updated_at")
             
-            serializer = GuideListSerializer(guide_objects, many=True)
+            page = self.paginate_queryset(guide_objects)
+            if page is not None:
+                serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+                # serializer = GuideListSerializer(guide_objects, many=True)
+            else:
+                serializer = self.serializer_class(guide_objects, many=True)
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class GuideRecommend(APIView):
+class GuideRecommend(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = GuideListSerializer
+
     def get(self, request):
         keywords = json.loads(request.GET.get('keyword', ''))
         region = request.GET.get('region', '')
@@ -79,7 +101,12 @@ class GuideRecommend(APIView):
 
         for keyword in keywords:
             guides = guides.filter(tag__title=keyword)
-        serializer = GuideListSerializer(guides, many=True)
+        
+        page = self.paginate_queryset(guides)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(guides, many=True)
         return Response(serializer.data)
 
         
