@@ -17,3 +17,8 @@ class GuideListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guide
         fields = ('id', 'creator_id', 'created_at', 'title', 'summary')
+
+class RandomGuideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RandomGuide
+        fields = "__all__"

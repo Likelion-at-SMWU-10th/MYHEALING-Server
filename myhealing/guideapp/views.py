@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 
-from .serializers import GuideSerializer, GuideListSerializer, TagSerializer
-from .models import Guide, Tag
+from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
+from .models import Guide, RandomGuide, Tag
 from .pagination import PaginationHandlerMixin
 
 # Create your views here.
@@ -123,4 +123,10 @@ class GuideHighView(APIView):
     def get(self, request):
         guides = Guide.objects.order_by("-views")[:3]
         serializer = GuideSerializer(guides, many=True)
+        return Response(serializer.data)
+
+class RandomGuideList(APIView):
+    def get(self, request):
+        random_guides = RandomGuide.objects.all()
+        serializer = RandomGuideSerializer(random_guides, many=True)
         return Response(serializer.data)
