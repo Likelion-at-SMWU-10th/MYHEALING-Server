@@ -78,11 +78,11 @@ class GuideSearch(APIView, PaginationHandlerMixin):
         query = request.GET.get('query', '')
         if query:
             if scope == 'title': # 제목만
-                guide_objects = Guide.objects.filter(title__icontains = query).order_by("-updated_at")
+                guide_objects = Guide.objects.filter(title__icontains = query).order_by("-created_at")
             elif scope == 'body': # 본문만
-                guide_objects = Guide.objects.filter(body__icontains = query).order_by("-updated_at")
+                guide_objects = Guide.objects.filter(body__icontains = query).order_by("-created_at")
             else: # 제목 + 본문
-                guide_objects = (Guide.objects.filter(title__icontains=query) | Guide.objects.filter(body__icontains=query)).order_by("-updated_at")
+                guide_objects = (Guide.objects.filter(title__icontains=query) | Guide.objects.filter(body__icontains=query)).order_by("-created_at")
             
             page = self.paginate_queryset(guide_objects)
             if page is not None:
