@@ -60,8 +60,7 @@ class GuideSearch(APIView):
             else: # 제목 + 본문
                 guide_objects = (Guide.objects.filter(title__icontains=query) | Guide.objects.filter(body__icontains=query)).order_by("-updated_at")
             
-            # serializer = GuideListSerializer(guide_objects, many=True)
-            serializer = GuideSerializer(guide_objects, many=True)
+            serializer = GuideListSerializer(guide_objects, many=True)
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -77,11 +76,10 @@ class GuideRecommend(APIView):
             guides = Guide.objects.all()
         else:
             guides = Guide.objects.filter(address__icontains = region)
-            
+
         for keyword in keywords:
             guides = guides.filter(tag__title=keyword)
-        # serializer = GuideListSerializer(guides, many=True)
-        serializer = GuideSerializer(guides, many=True)
+        serializer = GuideListSerializer(guides, many=True)
         return Response(serializer.data)
 
         
