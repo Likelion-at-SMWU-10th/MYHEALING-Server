@@ -52,7 +52,7 @@ class GuideDetail(APIView):
         # 조회 수 증가
         guide.views += 1
         guide.save()
-        
+
         serializer = GuideSerializer(guide)
         return Response(serializer.data)
 
@@ -119,4 +119,8 @@ class GuideRecommend(APIView, PaginationHandlerMixin):
             serializer = self.serializer_class(guides, many=True)
         return Response(serializer.data)
 
-        
+class GuideHighView(APIView):
+    def get(self, request):
+        guides = Guide.objects.order_by("-views")[:3]
+        serializer = GuideSerializer(guides, many=True)
+        return Response(serializer.data)
