@@ -5,13 +5,19 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 
-from .serializers import GuideSerializer, GuideListSerializer
-from .models import Guide
+from .serializers import GuideSerializer, GuideListSerializer, TagSerializer
+from .models import Guide, Tag
 from .pagination import PaginationHandlerMixin
 
 # Create your views here.
 class MemoPagination(PageNumberPagination):
     page_size_query_param = 'limit'
+
+class TagList(APIView):
+    def get(self, request):
+        tags = Tag.objects.all().order_by("sort")
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
 
 class GuideList(APIView, PaginationHandlerMixin):
     pagination_class = MemoPagination

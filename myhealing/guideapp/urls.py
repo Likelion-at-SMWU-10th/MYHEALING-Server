@@ -10,7 +10,8 @@ urlpatterns = [
     path('', GuideList.as_view()),
     path('<int:pk>', GuideDetail.as_view()),
     path('search/', GuideSearch.as_view()),
-    path('recommend/', GuideRecommend.as_view())
+    path('recommend/', GuideRecommend.as_view()),
+    path('tags/', TagList.as_view())
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
