@@ -49,6 +49,10 @@ class GuideDetail(APIView):
 
     def get(self, request, pk): # guide
         guide = self.get_object(pk)
+        # 조회 수 증가
+        guide.views += 1
+        guide.save()
+        
         serializer = GuideSerializer(guide)
         return Response(serializer.data)
 
