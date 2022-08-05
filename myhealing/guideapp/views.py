@@ -1,7 +1,9 @@
+import json
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import Http404
+from django.db.models import Count
 
 from .serializers import GuideSerializer, GuideListSerializer
 from .models import Guide
@@ -52,13 +54,34 @@ class GuideSearch(APIView):
         query = request.GET.get('query', '')
         if query:
             if scope == 'title': # 제목만
-                guide_objects = Guide.objects.filter(title__contains = query).order_by("-updated_at")
+                guide_objects = Guide.objects.filter(title__icontains = query).order_by("-updated_at")
             elif scope == 'body': # 본문만
-                guide_objects = Guide.objects.filter(body__contains = query).order_by("-updated_at")
+                guide_objects = Guide.objects.filter(body__icontains = query).order_by("-updated_at")
             else: # 제목 + 본문
-                guide_objects = (Guide.objects.filter(title__contains=query) | Guide.objects.filter(body__contains=query)).order_by("-updated_at")
+                guide_objects = (Guide.objects.filter(title__icontains=query) | Guide.objects.filter(body__icontains=query)).order_by("-updated_at")
             
-            serializer = GuideListSerializer(guide_objects, many=True)
+            # serializer = GuideListSerializer(guide_objects, many=True)
+            serializer = GuideSerializer(guide_objects, many=True)
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class GuideRecommend(APIView):
+    def get(self, request):
+        keywords = json.loads(request.GET.get('keyword', ''))
+        region = request.GET.get('region', '')
+        # keyword는 하나 이상 선택하도록, region은 없을 경우 전체 검색
+        if not keywords:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if not region:
+            guides = Guide.objects.all()
+        else:
+            guides = Guide.objects.filter(address__icontains = region)
+            
+        for keyword in keywords:
+            guides = guides.filter(tag__title=keyword)
+        # serializer = GuideListSerializer(guides, many=True)
+        serializer = GuideSerializer(guides, many=True)
+        return Response(serializer.data)
+
+        

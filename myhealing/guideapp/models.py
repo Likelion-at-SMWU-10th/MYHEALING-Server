@@ -14,7 +14,7 @@ class Guide(models.Model):
     address = models.CharField(max_length=50, default = '')
     views = models.IntegerField(default = 0)
     thumbnail = models.ImageField(upload_to='img/guide/', height_field=None, width_field=None, max_length=100, blank=True)
-    tag = models.ManyToManyField('Tag')
+    tag = models.ManyToManyField('Tag', related_name='guide')
 
     def __str__(self):
         return self.title
