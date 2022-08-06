@@ -1,8 +1,10 @@
 import json
+import random
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Max
 from django.http import Http404
 
 from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
@@ -130,3 +132,14 @@ class RandomGuideList(APIView):
         random_guides = RandomGuide.objects.all()
         serializer = RandomGuideSerializer(random_guides, many=True)
         return Response(serializer.data)
+
+class RandomGuideOne(APIView):
+    def get(self, request):
+        max_id = RandomGuide.objects.all().aggregate(max_id=Max("id"))['max_id']
+        while True:
+            pk = random.randint(1, max_id)
+            random_guide = RandomGuide.objects.filter(pk=pk).first()
+            if random_guide:
+                serializer = RandomGuideSerializer(random_guide)
+                return Response(serializer.data)
+
