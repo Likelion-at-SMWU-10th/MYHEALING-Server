@@ -4,7 +4,7 @@ from .models import *
 class MemoryImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = MemoryImage
-        fields = ('id', 'image', 'memory')
+        fields = ('id', 'image', 'memory', 'thumbnail')
         memory = serializers.Field(source='memory.id')
 
 class MemorySerializer(serializers.ModelSerializer):
@@ -20,7 +20,6 @@ class MemorySerializer(serializers.ModelSerializer):
             'title', 
             'body', 
             'scope', 
-            'thumbnail', 
             'images'
         )
 

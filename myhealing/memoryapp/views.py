@@ -38,10 +38,12 @@ class MemoryList(APIView, PaginationHandlerMixin):
         images_data = request.FILES.getlist('image')
         serializer = MemorySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            memory = get_object_or_404(Memory, pk=serializer.data['id'])
-            for image_data in images_data:
-                MemoryImage.objects.create(memory=memory, image=image_data)
+            memory = serializer.save()
+            for i in range(len(images_data)):
+                if i==0:
+                    MemoryImage.objects.create(memory=memory, image=images_data[i], thumbnail=True)
+                else:
+                    MemoryImage.objects.create(memory=memory, image=images_data[i])
             return Response(data=serializer.data)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
