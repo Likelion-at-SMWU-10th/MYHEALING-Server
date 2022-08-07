@@ -26,7 +26,9 @@ class KakaoCallBackView(APIView): # 토큰 요청
         error = token_json.get('error')
         if error is not None:
             raise json.JSONDecodeError(error)
+
         access_token = token_json.get('access_token')
+
 
         profile_req = requests.get(
             "https://kapi.kakao.com/v2/user/me", headers={"Authorization":f"Bearer {access_token}"} # 사용자 정보 요청
