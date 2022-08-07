@@ -89,7 +89,6 @@ class GuideSearch(APIView, PaginationHandlerMixin):
             page = self.paginate_queryset(guide_objects)
             if page is not None:
                 serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-                # serializer = GuideListSerializer(guide_objects, many=True)
             else:
                 serializer = self.serializer_class(guide_objects, many=True)
             return Response(serializer.data)
