@@ -5,19 +5,32 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from .models import *
 from .serializers import *
+from .pagination import PaginationHandlerMixin
 
 import os
 import shutil
 
-class MemoryList(APIView):
+class MemoPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
+
+class MemoryList(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = MemoryListSerializer
+
     # /memory
     def get(self, request):
         # TODO: user_id filter 추후 추가 필요
-        memories = Memory.objects.all()
-        serializer = MemoryListSerializer(memories, many=True)
+        memories = Memory.objects.all().order_by("-created_at")
+
+        page = self.paginate_queryset(memories)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(memories, many=True)
         return Response(serializer.data)
     
     # /memory
