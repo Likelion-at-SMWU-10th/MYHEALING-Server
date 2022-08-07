@@ -8,7 +8,7 @@ class Guide(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     place = models.CharField(max_length=50, default = '')
-    cost = models.CharField(max_length=50, blank=True) # 구매 여부(해당사항 없다면 작성하지 않아도 됨)
+    cost = models.IntegerField()
     title = models.CharField(max_length=50)
     body = models.TextField()
     address = models.CharField(max_length=50, default = '')
