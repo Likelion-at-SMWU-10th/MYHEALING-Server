@@ -44,7 +44,7 @@ class MemoryList(APIView, PaginationHandlerMixin):
                     MemoryImage.objects.create(memory=memory, image=images_data[i], thumbnail=True)
                 else:
                     MemoryImage.objects.create(memory=memory, image=images_data[i])
-            return Response(data=serializer.data)
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 class MemoryDetail(APIView):
