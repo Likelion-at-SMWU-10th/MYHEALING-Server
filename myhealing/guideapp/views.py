@@ -42,7 +42,10 @@ class GuideList(APIView, PaginationHandlerMixin):
             guide = serializer.save()
             if tags:
                 for tag in tags:
-                    guide.tag.add(Tag.objects.get(title=tag))
+                    try: 
+                        guide.tag.add(Tag.objects.get(title=tag))
+                    except Tag.DoesNotExist:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
