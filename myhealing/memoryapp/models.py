@@ -13,7 +13,6 @@ class Memory(models.Model):
     title = models.CharField(max_length=50)
     body = models.TextField()
     scope = models.CharField(max_length=7, choices=Scope.choices, default=Scope.PRIVATE)
-    thumbnail = models.IntegerField(default=-1)
 
     def __str__(self):
         return self.title
@@ -29,5 +28,6 @@ class MemoryImage(models.Model):
 
     # 'MEDIA_URL/img/memory/2022/07/23/{memory.pk}/xxx.png' 문자열로 DB 필드 저장
     image = models.ImageField(upload_to = image_upload_path)
+    thumbnail = models.BooleanField(default=False)
     
     

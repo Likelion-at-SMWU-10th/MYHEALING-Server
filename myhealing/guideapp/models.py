@@ -8,12 +8,12 @@ class Guide(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     place = models.CharField(max_length=50, default = '')
-    cost = models.CharField(max_length=50, blank=True) # 구매 여부(해당사항 없다면 작성하지 않아도 됨)
+    cost = models.IntegerField()
     title = models.CharField(max_length=50)
     body = models.TextField()
     address = models.CharField(max_length=50, default = '')
     views = models.IntegerField(default = 0)
-    thumbnail = models.ImageField(upload_to='img/guide/', height_field=None, width_field=None, max_length=100, blank=True)
+    # thumbnail = models.ImageField(upload_to='img/guide/', height_field=None, width_field=None, max_length=100, blank=True)
     tag = models.ManyToManyField('Tag', related_name='guide')
 
     def __str__(self):
@@ -21,6 +21,15 @@ class Guide(models.Model):
 
     def summary(self):
         return self.body[:30]
+
+class GuideImage(models.Model):
+    guide = models.ForeignKey(Guide, on_delete=models.CASCADE, related_name="images")
+
+    def image_upload_path(instance, filename):
+        return 'img/guide/{0}/{1}'.format(instance.guide.id, filename)
+    
+    image = models.ImageField(upload_to = image_upload_path)
+    thumbnail = models.BooleanField(default=False)
 
 class Tag(models.Model):
     class Sort(models.TextChoices):

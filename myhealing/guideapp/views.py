@@ -1,14 +1,17 @@
 import json
 import random
+import shutil
+import os
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Max
 from django.http import Http404
+from django.conf import settings
 
 from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
-from .models import Guide, RandomGuide, Tag
+from .models import Guide, RandomGuide, Tag, GuideImage
 from .pagination import PaginationHandlerMixin
 
 # Create your views here.
@@ -37,8 +40,25 @@ class GuideList(APIView, PaginationHandlerMixin):
 
     def post(self, request):
         serializer = GuideSerializer(data=request.data)
+        tags = request.data.getlist('tag')
+        images = request.FILES.getlist('image')
         if serializer.is_valid():
-            serializer.save()
+            guide = serializer.save()
+            # 태그 추가
+            if tags:
+                for tag in tags:
+                    try: 
+                        guide.tag.add(Tag.objects.get(title=tag))
+                    except Tag.DoesNotExist:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            # 이미지 추가
+            for i in range(len(images)):
+                if i==0:
+                    GuideImage.objects.create(guide=guide, image=images[i], thumbnail=True)
+                else:
+                    GuideImage.objects.create(guide=guide, image=images[i])
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -60,15 +80,31 @@ class GuideDetail(APIView):
 
     def put(self, request, pk):
         guide = self.get_object(pk)
+        file_change_check = request.POST.get('file_change', False)
         serializer = GuideSerializer(guide, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # 사진 변경이 있는 경우
+            if file_change_check:
+                images = GuideImage.objects.filter(guide=guide.id)
+                if images: # 기존 사진이 없는 경우 delete 진행 X
+                    for image in images:
+                        image.delete()
+                    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'img/guide', str(pk)).replace('\\', '/'), ignore_errors=True)
+            # 다시 저장
+            images_data = request.FILES.getlist('image')
+            for i in range(len(images_data)):
+                if i==0:
+                    GuideImage.objects.create(guide=guide, image=images_data[i], thumbnail=True)
+                else:
+                    GuideImage.objects.create(guide=guide, image=images_data[i])
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         guide = self.get_object(pk)
         guide.delete()
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'img/guide', str(pk)).replace('\\', '/'), ignore_errors=True)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class GuideSearch(APIView, PaginationHandlerMixin):
@@ -89,7 +125,6 @@ class GuideSearch(APIView, PaginationHandlerMixin):
             page = self.paginate_queryset(guide_objects)
             if page is not None:
                 serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-                # serializer = GuideListSerializer(guide_objects, many=True)
             else:
                 serializer = self.serializer_class(guide_objects, many=True)
             return Response(serializer.data)
