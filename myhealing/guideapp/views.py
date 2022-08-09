@@ -37,8 +37,12 @@ class GuideList(APIView, PaginationHandlerMixin):
 
     def post(self, request):
         serializer = GuideSerializer(data=request.data)
+        tags = request.data.get('tag')
         if serializer.is_valid():
-            serializer.save()
+            guide = serializer.save()
+            if tags:
+                for tag in tags:
+                    guide.tag.add(Tag.objects.get(title=tag))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
