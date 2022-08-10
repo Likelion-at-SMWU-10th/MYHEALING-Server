@@ -23,15 +23,15 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, nickname, password, **extra_fields):
+    def create_superuser(self, email, user_id, password, **extra_fields):
         """
         주어진 개인정보로 관리자 User 인스턴스 생성
         최상위 사용자이므로 권한 부여
         """
         user = self.create_user(
-            user_id = None,
+            user_id = user_id,
             email = email,
-            nickname = nickname,
+            nickname = None,
             password = password,
             introduce = None,
             profile_photo = None,
@@ -58,8 +58,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 헬퍼 클래스 사용
     objects = UserManager()
 
-    # 사용자의 username field는 nickname으로 설정
-    USERNAME_FIELD = 'nickname'
+    # 사용자의 username field는 user id로 설정
+    USERNAME_FIELD = 'user_id'
     # 필수 작성 field
     REQUIRED_FIELDS = ['email']
 
