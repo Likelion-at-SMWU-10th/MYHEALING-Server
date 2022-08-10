@@ -1,39 +1,30 @@
-from tkinter.ttk import Style
-from rest_framework import serializers
 from .models import User
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
 
-class UserJWTSignupSerializer(serializers.ModelSerializer):
-    user_id = serializers.CharField(write_only=True, max_length=15)
-    password = serializers.CharField(write_only=True, max_length=15)
-    email = serializers.CharField(write_only=True, max_length=255)
-    nickname = serializers.CharField(write_only=True, max_length=15)
-    introduce = serializers.CharField(write_only=True, max_length=50)
-    profile_photo = serializers.ImageField(required=False, max_length=400)
-    header_photo = serializers.ImageField(required=False, max_length=400)
-    
-    class Meta(object):
+User = get_user_model()
+
+class SignupSerializer(serializers.ModelSerializer):
+    class Meta:
         model = User
-        fields = ['user_id', 'password', 'email', 'nickname', 'introduce', 'profile_photo', 'header_photo']
+        fields = '__all__'
 
-        def save(self, request):
-            user = super().save()
-
-            user.user_id = self.validated_data['user_id']
-            user.password = self.validated_data['password']
-            user.email = self.validated_data['email']
-            user.nickname = self.validated_data['nickname']
-            user.introduce = self.validated_data['introduce']
-            user.profile_photo = self.validated_data['profile_photo']
-            user.header_photo = self.validated_data['header_photo']
-
-            user.save()
-
-            return user
-
-        def validate(self, data):
-            user_id = data.get('user_id', None)
-
-            if User.objects.filter(user_id=user_id).exits():
-                raise serializers.ValidationError("이미 존재하는 사용자입니다.")
-
-            return data
+    def create(self, validated_data): # 회원가입
+        user_id = validated_data.get('user_id')
+        password = validated_data.get('password')
+        email = validated_data.get('email')
+        nickname = validated_data.get('nickname')
+        introduce = validated_data.get('introduce')
+        profile_photo = validated_data.get('profile_photo')
+        header_photo = validated_data.get('header_photo')
+        user = User(
+            user_id = user_id,
+            email = email,
+            nickname = nickname,
+            introduce = introduce,
+            profile_photo = profile_photo,
+            header_photo = header_photo,
+        )
+        user.set_password(password)
+        user.save()
+        return user

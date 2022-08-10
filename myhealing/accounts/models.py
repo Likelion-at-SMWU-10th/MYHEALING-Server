@@ -23,18 +23,19 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, user_id, password, email, nickname, introduce, profile_photo, header_photo, ):
+    def create_superuser(self, email, nickname, password, **extra_fields):
         """
         주어진 개인정보로 관리자 User 인스턴스 생성
         최상위 사용자이므로 권한 부여
         """
         user = self.create_user(
-            user_id = user_id,
+            user_id = None,
             email = email,
             nickname = nickname,
-            introduce = introduce,
-            profile_photo = profile_photo,
-            header_photo = header_photo,
+            password = password,
+            introduce = None,
+            profile_photo = None,
+            header_photo = None,
         )
 
         user.is_staff = True
@@ -44,15 +45,23 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.CharField(unique=True, blank=False, max_length=15)
+    user_id = models.CharField(unique=True, blank=False, null=True, max_length=15)
     email = models.CharField(unique=True, blank=False, max_length=255)
-    nickname = models.CharField(unique=True, blank=False, max_length=15)
-    introduce = models.CharField(blank=True, max_length=50)
-    profile_photo = models.ImageField(blank=True, max_length=400)
-    header_photo = models.ImageField(blank=True, max_length=400)
+    nickname = models.CharField(unique=True, blank=True, null=True, max_length=15)
+    introduce = models.CharField(blank=True, null=True,  max_length=50)
+    profile_photo = models.ImageField(blank=True, null=True,  max_length=400)
+    header_photo = models.ImageField(blank=True, null=True,  max_length=400)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    # 헬퍼 클래스 사용
+    objects = UserManager()
+
+    # 사용자의 username field는 nickname으로 설정
+    USERNAME_FIELD = 'nickname'
+    # 필수 작성 field
+    REQUIRED_FIELDS = ['email']
 
 
 # class User(models.Model):

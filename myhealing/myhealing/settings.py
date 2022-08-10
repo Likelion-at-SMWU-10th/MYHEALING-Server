@@ -148,3 +148,5 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',  # User 모델 연결
 }
+
+AUTH_USER_MODEL = 'accounts.User'

@@ -5,5 +5,5 @@ from rest_framework_simplejwt.views import TokenVerifyView
 from .views import *
 
 urlpatterns = [
-    path('signup/', JWTSignupView.as_view()),
+    path('signup/', JWTSignupView.as_view()), # 회원가입
 ]
