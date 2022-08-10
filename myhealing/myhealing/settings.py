@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from telnetlib import AUTHENTICATION
 
@@ -19,7 +20,7 @@ SECRET_KEY = 'django-insecure-yp1d#ma%)uu^2ri&)uc1pm1k3xh+r$nf$2$3z@o!oay9^&*=4)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # MEDIA FILES
@@ -37,7 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'guideapp',
     'memoryapp',
+    'accounts',
+
+    # jwt
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -124,10 +130,23 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# SITE_ID = 1
+SITE_ID = 1
 
 # Rest-framework
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 2,
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',)
 }
+
+REST_USE_JWT = True
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',  # User 모델 연결
+}
+
+AUTH_USER_MODEL = 'accounts.User'
