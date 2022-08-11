@@ -45,9 +45,9 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.CharField(unique=True, blank=False, null=True, max_length=15)
-    email = models.CharField(unique=True, blank=False, max_length=255)
-    nickname = models.CharField(unique=True, blank=True, null=True, max_length=15)
+    user_id = models.CharField(unique=True, blank=False, null=False, max_length=15, default='')
+    email = models.CharField(unique=True, blank=False, null=False, max_length=255)
+    nickname = models.CharField(unique=True, blank=False, null=False, max_length=15, default='')
     introduce = models.CharField(blank=True, null=True,  max_length=50)
     profile_photo = models.ImageField(blank=True, null=True,  max_length=400)
     header_photo = models.ImageField(blank=True, null=True,  max_length=400)
