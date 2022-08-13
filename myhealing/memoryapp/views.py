@@ -22,7 +22,7 @@ class MypageMemoryList(APIView, PaginationHandlerMixin):
     serializer_class = MemoryListSerializer
 
     def get(self, request):
-        memories = Memory.objects.filter(user=request.user)
+        memories = Memory.objects.filter(user=request.user).order_by("-created_at")
 
         page = self.paginate_queryset(memories)
         if page is not None:
