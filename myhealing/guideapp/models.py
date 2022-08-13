@@ -14,6 +14,7 @@ class Guide(models.Model):
     body = models.TextField()
     address = models.CharField(max_length=50, default = '')
     views = models.IntegerField(default = 0)
+    star = models.IntegerField(default=0)
     tag = models.ManyToManyField('Tag', related_name='guide')
 
     def __str__(self):

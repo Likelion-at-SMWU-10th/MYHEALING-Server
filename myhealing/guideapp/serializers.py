@@ -31,6 +31,7 @@ class GuideSerializer(serializers.ModelSerializer):
             'body', 
             'address', 
             'views', 
+            'star',
             'tag',
             'images'
         )
