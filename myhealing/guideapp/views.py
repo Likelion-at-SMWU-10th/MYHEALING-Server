@@ -30,11 +30,7 @@ class MypageGuideList(APIView, PaginationHandlerMixin):
     serializer_class = GuideListSerializer
 
     def get(self, request):
-        user_pk = request.user.pk
-        if user_pk:
-            guides = Guide.objects.filter(pk=user_pk)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        guides = Guide.objects.filter(user=request.user)
 
         page = self.paginate_queryset(guides)
         if page is not None:
