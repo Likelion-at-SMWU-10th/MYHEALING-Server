@@ -12,6 +12,7 @@ from django.conf import settings
 
 from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
 from .models import Guide, RandomGuide, Tag, GuideImage
+from accounts.models import User
 from .pagination import PaginationHandlerMixin
 
 # Create your views here.
@@ -23,6 +24,25 @@ class TagList(APIView):
         tags = Tag.objects.all().order_by("sort")
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
+
+class MypageGuideList(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = GuideListSerializer
+
+    def get(self, request):
+        user_pk = request.user.pk
+        if user_pk:
+            guides = Guide.objects.filter(pk=user_pk)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        page = self.paginate_queryset(guides)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(page, many=True)
+        return Response(serializer.data)
+
 
 class GuideList(APIView, PaginationHandlerMixin):
     pagination_class = MemoPagination
@@ -40,14 +60,16 @@ class GuideList(APIView, PaginationHandlerMixin):
 
     def post(self, request):
         serializer = GuideSerializer(data=request.data)
-        tag_input = request.POST.get('tag')
+        tag_input = request.data.get('tag')
         if tag_input:
             tags = json.loads(tag_input)
         else:
             tags = None
+        
         images = request.FILES.getlist('image')
         if serializer.is_valid():
-            guide = serializer.save()
+            guide = serializer.save(user=request.user)
+
             # 태그 추가
             if tags:
                 for tag in tags:
@@ -196,4 +218,3 @@ class RandomGuideOne(APIView):
             if random_guide:
                 serializer = RandomGuideSerializer(random_guide)
                 return Response(serializer.data)
-

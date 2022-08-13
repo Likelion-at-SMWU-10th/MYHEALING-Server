@@ -1,9 +1,10 @@
 from unittest.util import _MAX_LENGTH
 from django.db import models
+from accounts.models import User
 
 # Create your models here.
 class Guide(models.Model):
-    creator_id = models.CharField(max_length=10)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guide")
     date = models.DateField() 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
