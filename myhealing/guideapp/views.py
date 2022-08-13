@@ -11,7 +11,7 @@ from django.http import Http404
 from django.conf import settings
 
 from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
-from .models import Guide, RandomGuide, Tag, GuideImage
+from .models import Guide, RandomGuide, Tag, GuideImage, Love
 from accounts.models import User
 from .pagination import PaginationHandlerMixin
 
@@ -214,3 +214,19 @@ class RandomGuideOne(APIView):
             if random_guide:
                 serializer = RandomGuideSerializer(random_guide)
                 return Response(serializer.data)
+
+class GuideLove(APIView):
+    def post(self, request, guide_id):
+        current_user = request.user
+        guide = Guide.objects.get(pk=guide_id)
+
+        current_user_guides = Love.objects.filter(user=current_user)
+        dup_guide_check = current_user_guides.filter(guide=guide)
+        if dup_guide_check:
+            return Response({
+                "message": "already exists in guide_loved_set"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        Love.objects.create(guide=guide, user=current_user)
+
+        return Response(status=status.HTTP_201_CREATED)

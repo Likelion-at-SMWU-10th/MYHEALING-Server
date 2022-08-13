@@ -22,6 +22,11 @@ class Guide(models.Model):
     def summary(self):
         return self.body[:30]
 
+class Love(models.Model):
+    guide = models.ForeignKey(Guide, on_delete=models.CASCADE, related_name="love")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="love")
+    created_at = models.DateTimeField(auto_now_add=True)
+
 class GuideImage(models.Model):
     guide = models.ForeignKey(Guide, on_delete=models.CASCADE, related_name="images")
 

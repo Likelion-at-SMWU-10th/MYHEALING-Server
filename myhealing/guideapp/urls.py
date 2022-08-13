@@ -15,7 +15,8 @@ urlpatterns = [
     path('highviews/', GuideHighView.as_view()),
     path('randomlist/', RandomGuideList.as_view()),
     path('randomguide/', RandomGuideOne.as_view()),
-    path('mypage/', MypageGuideList.as_view())
+    path('mypage/', MypageGuideList.as_view()),
+    path('love/<int:guide_id>', GuideLove.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
