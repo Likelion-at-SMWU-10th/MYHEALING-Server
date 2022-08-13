@@ -40,7 +40,7 @@ class GuideList(APIView, PaginationHandlerMixin):
 
     def post(self, request):
         serializer = GuideSerializer(data=request.data)
-        tags = request.data.get('tag') 
+        tags = request.POST.getlist('tag[]') 
         images = request.FILES.getlist('image')
         if serializer.is_valid():
             guide = serializer.save()
