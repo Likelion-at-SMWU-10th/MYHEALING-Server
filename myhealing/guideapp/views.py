@@ -40,7 +40,11 @@ class GuideList(APIView, PaginationHandlerMixin):
 
     def post(self, request):
         serializer = GuideSerializer(data=request.data)
-        tags = json.loads(request.POST.get('tag')) 
+        tag_input = request.POST.get('tag')
+        if tag_input:
+            tags = json.loads(tag_input)
+        else:
+            tags = None
         images = request.FILES.getlist('image')
         if serializer.is_valid():
             guide = serializer.save()
@@ -80,10 +84,25 @@ class GuideDetail(APIView):
 
     def put(self, request, pk):
         guide = self.get_object(pk)
+        tag_input = request.POST.get('tag')
+        if tag_input:
+            tags = json.loads(tag_input)
+        else:
+            tags = None
         file_change_check = request.POST.get('file_change', False)
         serializer = GuideSerializer(guide, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # 태그 수정
+            # 1) 태그 전체 삭제
+            guide.tag.clear()
+            # 2) 태그 추가
+            if tags:
+                for tag in tags:
+                    try: 
+                        guide.tag.add(Tag.objects.get(title=tag))
+                    except Tag.DoesNotExist:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             # 사진 변경이 있는 경우
             if file_change_check:
                 images = GuideImage.objects.filter(guide=guide.id)
