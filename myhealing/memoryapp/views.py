@@ -38,7 +38,7 @@ class MemoryList(APIView, PaginationHandlerMixin):
         images_data = request.FILES.getlist('image')
         serializer = MemorySerializer(data=request.data)
         if serializer.is_valid():
-            memory = serializer.save()
+            memory = serializer.save(user=request.user)
             for i in range(len(images_data)):
                 if i==0:
                     MemoryImage.objects.create(memory=memory, image=images_data[i], thumbnail=True)

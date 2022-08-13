@@ -1,11 +1,13 @@
 from xmlrpc.client import Boolean
 from django.db import models
+from accounts.models import User
 
 class Memory(models.Model):
     class Scope(models.TextChoices):
         PRIVATE = 'PRIVATE'
         PUBLIC = 'PUBLIC'
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="memory")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     date = models.DateField()

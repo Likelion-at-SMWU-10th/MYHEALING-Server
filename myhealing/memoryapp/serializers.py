@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from accounts.serializers import UserSerializer
 
 class MemoryImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,11 +9,13 @@ class MemoryImageSerializer(serializers.ModelSerializer):
         memory = serializers.Field(source='memory.id')
 
 class MemorySerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     images = MemoryImageSerializer(many=True, read_only=True)
     class Meta:
         model = Memory
         fields = (
             'id', 
+            'user',
             'created_at',
             'updated_at', 
             'date', 
@@ -22,6 +25,10 @@ class MemorySerializer(serializers.ModelSerializer):
             'scope', 
             'images'
         )
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        del rep["user"]
+        return rep
 
 class MemoryListSerializer(serializers.ModelSerializer):
     class Meta:
