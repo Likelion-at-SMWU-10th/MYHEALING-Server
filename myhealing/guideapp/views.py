@@ -9,6 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Max
 from django.http import Http404
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
 from .models import Guide, RandomGuide, Tag, GuideImage, Love
@@ -243,3 +244,14 @@ class GuideLove(APIView, PaginationHandlerMixin):
         Love.objects.create(guide=guide, user=current_user)
 
         return Response(status=status.HTTP_201_CREATED)
+    
+    def delete(self, request, guide_id):
+        guide = get_object_or_404(Guide, pk=guide_id)
+        love = Love.objects.filter(user=request.user).filter(guide=guide)
+        if not love:
+            return Response({
+                "message": "DoesNotExist, you might not loved this guide before"
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        love.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
