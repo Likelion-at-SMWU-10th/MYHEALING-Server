@@ -63,12 +63,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 필수 작성 field
     REQUIRED_FIELDS = ['email']
 
-
-# class User(models.Model):
-#     user_id = models.CharField(max_length=15)
-#     password = models.CharField(max_length=15)
-#     email = models.CharField(max_length=255)
-#     nickname = models.CharField(max_length=15)
-#     introduce = models.CharField(max_length=50)
-#     profile_photo = models.ImageField(name="프로필 이미지", upload_to="img/accounts/", height_field=None, width_field=None, max_length=400, blank=True)
-#     header_photo = models.ImageField(name="배경 이미지", upload_to="img/accounts/", height_field=None, width_field=None, max_length=400, blank=True)
+class KakaoUser(models.Model):
+    avatar = models.ImageField(upload_to="img/avatar/", blank=True, null=True)
+    email = models.CharField(max_length=255)
+    nickname = models.CharField(max_length=15)
+    introduce = models.CharField(max_length=50, blank=True, null=True)
+    profile_photo = models.TextField(blank=True, null=True)
+    last_login = models.DateField(auto_now=True, null=True)
