@@ -6,5 +6,4 @@ class User(models.Model):
     nickname = models.CharField(max_length=15)
     introduce = models.CharField(max_length=50, blank=True, null=True)
     profile_photo = models.TextField(blank=True, null=True)
-    header_photo = models.TextField(blank=True, null=True)
     last_login = models.DateField(auto_now=True, null=True)

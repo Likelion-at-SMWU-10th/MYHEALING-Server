@@ -74,12 +74,11 @@ class KakaoCallBackView(APIView):
         token = TokenObtainPairSerializer.get_token(user)
         jwt_refresh_token = str(token)
         jwt_access_token = str(token.access_token)
-        # profile_photo_req = requests.get(profile_photo)
         res = Response(
             {
                 "user": nickname,
                 "email": email,
-                # "profile_photo": ContentFile(profile_photo_req.content, encoding='utf-16'),
+                "profile_photo": profile_photo,
                 "message": "카카오 로그인에 성공하였습니다.",
                 "token": {
                     "access": jwt_access_token,
@@ -92,11 +91,3 @@ class KakaoCallBackView(APIView):
         res.set_cookie("refresh", jwt_refresh_token, httponly=True)
         return res
         # return redirect(reverse('kakaologin')) # redirect page는 추후 변경.
-
-
-class KakaoFinishView(APIView):
-    def get(self, request):
-        data = {
-            'message' : 'kakao login success!'
-        }
-        return JsonResponse(data=data)
