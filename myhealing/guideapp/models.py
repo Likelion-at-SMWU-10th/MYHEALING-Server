@@ -1,9 +1,10 @@
 from unittest.util import _MAX_LENGTH
 from django.db import models
+from accounts.models import User
 
 # Create your models here.
 class Guide(models.Model):
-    creator_id = models.CharField(max_length=10)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guide")
     date = models.DateField() 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
@@ -13,7 +14,7 @@ class Guide(models.Model):
     body = models.TextField()
     address = models.CharField(max_length=50, default = '')
     views = models.IntegerField(default = 0)
-    # thumbnail = models.ImageField(upload_to='img/guide/', height_field=None, width_field=None, max_length=100, blank=True)
+    star = models.IntegerField(default=0)
     tag = models.ManyToManyField('Tag', related_name='guide')
 
     def __str__(self):
@@ -21,6 +22,11 @@ class Guide(models.Model):
 
     def summary(self):
         return self.body[:30]
+
+class Love(models.Model):
+    guide = models.ForeignKey(Guide, on_delete=models.CASCADE, related_name="love")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="love")
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class GuideImage(models.Model):
     guide = models.ForeignKey(Guide, on_delete=models.CASCADE, related_name="images")

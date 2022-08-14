@@ -9,9 +9,10 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Max
 from django.http import Http404
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from .serializers import GuideSerializer, GuideListSerializer, RandomGuideSerializer, TagSerializer
-from .models import Guide, RandomGuide, Tag, GuideImage
+from .models import Guide, RandomGuide, Tag, GuideImage, Love
 from .pagination import PaginationHandlerMixin
 
 # Create your views here.
@@ -23,6 +24,21 @@ class TagList(APIView):
         tags = Tag.objects.all().order_by("sort")
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
+
+class MypageGuideList(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = GuideListSerializer
+
+    def get(self, request):
+        guides = Guide.objects.filter(user=request.user).order_by("-created_at")
+
+        page = self.paginate_queryset(guides)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(page, many=True)
+        return Response(serializer.data)
+
 
 class GuideList(APIView, PaginationHandlerMixin):
     pagination_class = MemoPagination
@@ -40,10 +56,16 @@ class GuideList(APIView, PaginationHandlerMixin):
 
     def post(self, request):
         serializer = GuideSerializer(data=request.data)
-        tags = request.data.getlist('tag')
+        tag_input = request.data.get('tag')
+        if tag_input:
+            tags = json.loads(tag_input)
+        else:
+            tags = None
+        
         images = request.FILES.getlist('image')
         if serializer.is_valid():
-            guide = serializer.save()
+            guide = serializer.save(user=request.user)
+
             # 태그 추가
             if tags:
                 for tag in tags:
@@ -80,10 +102,25 @@ class GuideDetail(APIView):
 
     def put(self, request, pk):
         guide = self.get_object(pk)
+        tag_input = request.POST.get('tag')
+        if tag_input:
+            tags = json.loads(tag_input)
+        else:
+            tags = None
         file_change_check = request.POST.get('file_change', False)
         serializer = GuideSerializer(guide, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # 태그 수정
+            # 1) 태그 전체 삭제
+            guide.tag.clear()
+            # 2) 태그 추가
+            if tags:
+                for tag in tags:
+                    try: 
+                        guide.tag.add(Tag.objects.get(title=tag))
+                    except Tag.DoesNotExist:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             # 사진 변경이 있는 경우
             if file_change_check:
                 images = GuideImage.objects.filter(guide=guide.id)
@@ -178,3 +215,43 @@ class RandomGuideOne(APIView):
                 serializer = RandomGuideSerializer(random_guide)
                 return Response(serializer.data)
 
+class GuideLove(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = GuideListSerializer
+    
+    def get(self, request):
+        guides_loved_pk = Love.objects.filter(user=request.user).values_list('guide', flat=True).order_by("-created_at")
+        guides = Guide.objects.filter(pk__in=guides_loved_pk)
+
+        page = self.paginate_queryset(guides)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(page, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, guide_id):
+        current_user = request.user
+        guide = Guide.objects.get(pk=guide_id)
+
+        current_user_guides = Love.objects.filter(user=current_user)
+        dup_guide_check = current_user_guides.filter(guide=guide)
+        if dup_guide_check:
+            return Response({
+                "message": "already exists in guide_loved_set"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        Love.objects.create(guide=guide, user=current_user)
+
+        return Response(status=status.HTTP_201_CREATED)
+    
+    def delete(self, request, guide_id):
+        guide = get_object_or_404(Guide, pk=guide_id)
+        love = Love.objects.filter(user=request.user).filter(guide=guide)
+        if not love:
+            return Response({
+                "message": "DoesNotExist, you might not loved this guide before"
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        love.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

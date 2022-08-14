@@ -31,7 +31,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             user_id = user_id,
             email = email,
-            nickname = None,
+            nickname = user_id,
             password = password,
             introduce = None,
             profile_photo = None,

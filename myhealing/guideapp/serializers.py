@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from accounts.serializers import UserSerializer
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,11 +16,12 @@ class GuideImageSerializer(serializers.ModelSerializer):
 class GuideSerializer(serializers.ModelSerializer):
     tag = TagSerializer(read_only=True, many=True)
     images = GuideImageSerializer(many=True, read_only=True)
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Guide
         fields = (
             'id', 
-            'creator_id', 
+            'user',
             'date', 
             'created_at', 
             'updated_at', 
@@ -29,14 +31,26 @@ class GuideSerializer(serializers.ModelSerializer):
             'body', 
             'address', 
             'views', 
+            'star',
             'tag',
             'images'
         )
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        del rep["user"]
+        return rep
 
 class GuideListSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Guide
-        fields = ('id', 'creator_id', 'created_at', 'title', 'summary')
+        fields = ('id', 'user', 'created_at', 'title', 'summary')
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        del rep["user"]
+        return rep
 
 class RandomGuideSerializer(serializers.ModelSerializer):
     class Meta:

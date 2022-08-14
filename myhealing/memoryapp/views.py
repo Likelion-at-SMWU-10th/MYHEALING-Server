@@ -1,6 +1,5 @@
 from django.http import Http404
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
@@ -16,6 +15,21 @@ import shutil
 
 class MemoPagination(PageNumberPagination):
     page_size_query_param = 'limit'
+
+class MypageMemoryList(APIView, PaginationHandlerMixin):
+    pagination_class = MemoPagination
+    serializer_class = MemoryListSerializer
+
+    def get(self, request):
+        memories = Memory.objects.filter(user=request.user).order_by("-created_at")
+
+        page = self.paginate_queryset(memories)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(page, many=True)
+        return Response(serializer.data)
+
 
 class MemoryList(APIView, PaginationHandlerMixin):
     pagination_class = MemoPagination
@@ -38,7 +52,7 @@ class MemoryList(APIView, PaginationHandlerMixin):
         images_data = request.FILES.getlist('image')
         serializer = MemorySerializer(data=request.data)
         if serializer.is_valid():
-            memory = serializer.save()
+            memory = serializer.save(user=request.user)
             for i in range(len(images_data)):
                 if i==0:
                     MemoryImage.objects.create(memory=memory, image=images_data[i], thumbnail=True)

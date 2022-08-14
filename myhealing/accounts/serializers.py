@@ -33,3 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+    
+    # def to_representation(self, instance):
+    #     rep = super().to_representation(instance)
+    #     del rep["guide_loved"]
+    #     return rep
