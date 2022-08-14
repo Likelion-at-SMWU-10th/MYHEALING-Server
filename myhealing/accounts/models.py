@@ -4,7 +4,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 class UserManager(BaseUserManager):
     use_in_migrations: True
 
-    def create_user(self, user_id, password, email, nickname, introduce, profile_photo, header_photo, **kwargs):
+    def create_user(self, user_id, password, email, nickname, introduce, profile_photo, **kwargs):
         """
         주어진 개인정보로 일반 User 인스턴스 생성
         """       
@@ -17,7 +17,6 @@ class UserManager(BaseUserManager):
             nickname = nickname,
             introduce = introduce,
             profile_photo = profile_photo,
-            header_photo = header_photo,
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -35,7 +34,6 @@ class UserManager(BaseUserManager):
             password = password,
             introduce = None,
             profile_photo = None,
-            header_photo = None,
         )
 
         user.is_staff = True
@@ -45,15 +43,19 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser, PermissionsMixin):
+    avatar = models.ImageField(upload_to="img/avatar/", blank=True, null=True)
     user_id = models.CharField(unique=True, blank=False, null=False, max_length=15, default='')
     email = models.CharField(unique=True, blank=False, null=False, max_length=255)
     nickname = models.CharField(unique=True, blank=False, null=False, max_length=15, default='')
     introduce = models.CharField(blank=True, null=True,  max_length=50)
     profile_photo = models.ImageField(blank=True, null=True,  max_length=400)
-    header_photo = models.ImageField(blank=True, null=True,  max_length=400)
+    last_login = models.DateField(auto_now=True, null=True)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user_id
 
     # 헬퍼 클래스 사용
     objects = UserManager()
@@ -63,10 +65,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 필수 작성 field
     REQUIRED_FIELDS = ['email']
 
-class KakaoUser(models.Model):
-    avatar = models.ImageField(upload_to="img/avatar/", blank=True, null=True)
-    email = models.CharField(max_length=255)
-    nickname = models.CharField(max_length=15)
-    introduce = models.CharField(max_length=50, blank=True, null=True)
-    profile_photo = models.TextField(blank=True, null=True)
-    last_login = models.DateField(auto_now=True, null=True)
+# class KakaoUser(models.Model):
+#     avatar = models.ImageField(upload_to="img/avatar/", blank=True, null=True)
+#     email = models.CharField(max_length=255)
+#     nickname = models.CharField(max_length=15)
+#     introduce = models.CharField(max_length=50, blank=True, null=True)
+#     profile_photo = models.TextField(blank=True, null=True)
+#     last_login = models.DateField(auto_now=True, null=True)
