@@ -1,6 +1,6 @@
 from django.db import models
 
-class User(models.Model):
+class KakaoUser(models.Model):
     avatar = models.ImageField(upload_to="img/avatar/", blank=True, null=True)
     email = models.CharField(max_length=255)
     nickname = models.CharField(max_length=15)

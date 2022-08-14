@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from myhealing.settings import SOCIAL_OUTH_CONFIG
 import requests, json
-from .models import User
+from .models import KakaoUser
 
 """
 인가코드 요청
@@ -56,9 +56,9 @@ class KakaoCallBackView(APIView):
         profile_photo = properties.get("profile_image_url") # 프로필 사진
         # return JsonResponse(data=properties, safe=False)
         try: # DB에 email이 존재하는지 확인
-            user = User.objects.get(email=email)
-        except User.DoesNotExist: # DB에 없다면 계정 생성
-            user = User.objects.create(
+            user = KakaoUser.objects.get(email=email)
+        except KakaoUser.DoesNotExist: # DB에 없다면 계정 생성
+            user = KakaoUser.objects.create(
                 email = email,
                 nickname = nickname,
             )
