@@ -99,10 +99,14 @@ class GuideDetail(APIView):
 
         serializer = GuideSerializer(guide)
         sdc = serializer.data.copy()
+        # 유저 정보 검사하여 is Writer 추가
         if guide.user == request.user:
             sdc['is_writer'] = True
         else:
             sdc['is_writer'] = False
+        
+        # 찜하기 수 확인하여 love_count 추가
+        sdc['love_count'] = Love.objects.filter(guide=guide).count()
 
         return Response(sdc)
 
@@ -225,6 +229,7 @@ class GuideLove(APIView, PaginationHandlerMixin):
     pagination_class = MemoPagination
     serializer_class = GuideListSerializer
     
+    # 내가 찜한 게시글
     def get(self, request):
         guides_loved_pk = Love.objects.filter(user=request.user).values_list('guide', flat=True).order_by("-created_at")
         guides = Guide.objects.filter(pk__in=guides_loved_pk)
@@ -236,6 +241,7 @@ class GuideLove(APIView, PaginationHandlerMixin):
             serializer = self.serializer_class(page, many=True)
         return Response(serializer.data)
 
+    # 게시글 찜하기
     def post(self, request, guide_id):
         current_user = request.user
         guide = Guide.objects.get(pk=guide_id)
@@ -251,6 +257,7 @@ class GuideLove(APIView, PaginationHandlerMixin):
 
         return Response(status=status.HTTP_201_CREATED)
     
+    # 게시글 찜 취소하기
     def delete(self, request, guide_id):
         guide = get_object_or_404(Guide, pk=guide_id)
         love = Love.objects.filter(user=request.user).filter(guide=guide)
