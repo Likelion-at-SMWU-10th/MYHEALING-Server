@@ -36,6 +36,7 @@ class GuideSerializer(serializers.ModelSerializer):
             'star',
             'tag',
             'images',
+            'love_count'
         )
     
     def to_representation(self, instance):

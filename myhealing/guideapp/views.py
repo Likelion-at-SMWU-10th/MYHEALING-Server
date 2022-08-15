@@ -25,6 +25,12 @@ class TagList(APIView):
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
 
+class GuideHighLove(APIView):
+    def get(self, request):
+        guides = Guide.objects.order_by("-love_count", "-created_at")[:3]
+        serializer = GuideSerializer(guides, many=True)
+        return Response(serializer.data)
+
 class MypageGuideList(APIView, PaginationHandlerMixin):
     pagination_class = MemoPagination
     serializer_class = GuideListSerializer
@@ -104,9 +110,6 @@ class GuideDetail(APIView):
             sdc['is_writer'] = True
         else:
             sdc['is_writer'] = False
-        
-        # 찜하기 수 확인하여 love_count 추가
-        sdc['love_count'] = Love.objects.filter(guide=guide).count()
 
         return Response(sdc)
 
@@ -254,10 +257,12 @@ class GuideLove(APIView, PaginationHandlerMixin):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         Love.objects.create(guide=guide, user=current_user)
+        guide.love_count += 1
+        guide.save()
 
         return Response({
-            "love_count": Love.objects.filter(guide=guide).count()
-        }, status=status.HTTP_201_CREATED)
+            "love_count": guide.love_count
+        },status=status.HTTP_201_CREATED)
     
     # 게시글 찜 취소하기
     def delete(self, request, guide_id):
@@ -269,7 +274,9 @@ class GuideLove(APIView, PaginationHandlerMixin):
             }, status=status.HTTP_404_NOT_FOUND)
         
         love.delete()
+        guide.love_count -= 1
+        guide.save()
 
         return Response({
-            "love_count": Love.objects.filter(guide=guide).count()
+            "love_count": guide.love_count
         }, status=status.HTTP_204_NO_CONTENT)
