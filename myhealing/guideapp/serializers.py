@@ -13,10 +13,12 @@ class GuideImageSerializer(serializers.ModelSerializer):
         fields = ('id', 'image', 'guide', 'thumbnail')
         guide = serializers.Field(source='guide.id')
 
+
 class GuideSerializer(serializers.ModelSerializer):
     tag = TagSerializer(read_only=True, many=True)
     images = GuideImageSerializer(many=True, read_only=True)
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = Guide
         fields = (
@@ -33,7 +35,8 @@ class GuideSerializer(serializers.ModelSerializer):
             'views', 
             'star',
             'tag',
-            'images'
+            'images',
+            'love_count'
         )
     
     def to_representation(self, instance):

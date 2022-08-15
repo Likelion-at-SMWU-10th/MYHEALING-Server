@@ -16,6 +16,7 @@ class Guide(models.Model):
     views = models.IntegerField(default = 0)
     star = models.IntegerField(default=0)
     tag = models.ManyToManyField('Tag', related_name='guide')
+    love_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
