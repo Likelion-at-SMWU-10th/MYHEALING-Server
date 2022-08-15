@@ -269,4 +269,7 @@ class GuideLove(APIView, PaginationHandlerMixin):
             }, status=status.HTTP_404_NOT_FOUND)
         
         love.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response({
+            "love_count": Love.objects.filter(guide=guide).count()
+        }, status=status.HTTP_204_NO_CONTENT)
