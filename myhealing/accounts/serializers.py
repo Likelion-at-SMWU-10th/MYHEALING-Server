@@ -16,14 +16,12 @@ class SignupSerializer(serializers.ModelSerializer):
         nickname = validated_data.get('nickname')
         introduce = validated_data.get('introduce')
         profile_photo = validated_data.get('profile_photo')
-        header_photo = validated_data.get('header_photo')
         user = User(
             user_id = user_id,
             email = email,
             nickname = nickname,
             introduce = introduce,
             profile_photo = profile_photo,
-            header_photo = header_photo,
         )
         user.set_password(password)
         user.save()
