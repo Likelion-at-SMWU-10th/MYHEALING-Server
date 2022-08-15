@@ -255,7 +255,9 @@ class GuideLove(APIView, PaginationHandlerMixin):
         
         Love.objects.create(guide=guide, user=current_user)
 
-        return Response(status=status.HTTP_201_CREATED)
+        return Response({
+            "love_count": Love.objects.filter(guide=guide).count()
+        }, status=status.HTTP_201_CREATED)
     
     # 게시글 찜 취소하기
     def delete(self, request, guide_id):
