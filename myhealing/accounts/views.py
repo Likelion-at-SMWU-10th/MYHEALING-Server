@@ -113,6 +113,7 @@ class KakaoCallBackView(APIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist: # DB에 없다면 계정 생성
             user = User.objects.create(
+                user_id = email.split(sep='@')[0],
                 email = email,
                 nickname = nickname,
             )
