@@ -72,7 +72,13 @@ class MemoryDetail(APIView):
     def get(self, request, memory_id):
         memory = self.get_object(memory_id)
         serializer = MemorySerializer(memory)
-        return Response(serializer.data)
+        sdc = serializer.data.copy()
+        if memory.user == request.user:
+            sdc['is_writer'] = True
+        else:
+            sdc['is_writer'] = False
+
+        return Response(sdc)
 
     # /memory/<int:memory_id>
     def put(self, request, memory_id):
