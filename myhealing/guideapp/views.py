@@ -98,7 +98,13 @@ class GuideDetail(APIView):
         guide.save()
 
         serializer = GuideSerializer(guide)
-        return Response(serializer.data)
+        sdc = serializer.data.copy()
+        if guide.user == request.user:
+            sdc['is_writer'] = True
+        else:
+            sdc['is_writer'] = False
+
+        return Response(sdc)
 
     def put(self, request, pk):
         guide = self.get_object(pk)
