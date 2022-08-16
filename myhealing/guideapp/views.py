@@ -110,6 +110,14 @@ class GuideDetail(APIView):
             sdc['is_writer'] = True
         else:
             sdc['is_writer'] = False
+        
+        # 유저 정보 검사하여 is Loved 추가
+        # if Love.objects.filter(guide=guide).filter(user=request.user):
+        #     sdc['is_loved'] = True
+        if guide.love.filter(user=request.user):
+            sdc['is_loved'] = True
+        else:
+            sdc['is_loved'] = False
 
         return Response(sdc)
 
