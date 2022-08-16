@@ -45,15 +45,17 @@ class GuideSerializer(serializers.ModelSerializer):
         return rep
 
 class GuideListSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user_name = serializers.SerializerMethodField(method_name='get_user_name')
+    user_profile_image = serializers.SerializerMethodField(method_name='get_user_profile')
     class Meta:
         model = Guide
-        fields = ('id', 'user', 'created_at', 'title', 'summary')
+        fields = ('id', 'user_name', 'user_profile_image', 'created_at', 'title', 'summary')
     
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        del rep["user"]
-        return rep
+    def get_user_name(self, obj):
+        return obj.user.nickname
+    
+    def get_user_profile(self, obj):
+        return obj.user.profile_photo.url
 
 class RandomGuideSerializer(serializers.ModelSerializer):
     class Meta:
