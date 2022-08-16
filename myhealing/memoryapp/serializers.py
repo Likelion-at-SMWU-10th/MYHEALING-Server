@@ -22,7 +22,7 @@ class MemorySerializer(serializers.ModelSerializer):
             'place', 
             'title', 
             'body', 
-            'scope', 
+            'address', 
             'images'
         )
     def to_representation(self, instance):
@@ -33,4 +33,4 @@ class MemorySerializer(serializers.ModelSerializer):
 class MemoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Memory
-        fields = ('id', 'created_at', 'title')
+        fields = ('id', 'created_at', 'title', 'summary')
