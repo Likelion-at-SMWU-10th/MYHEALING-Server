@@ -8,5 +8,5 @@ urlpatterns = [
     path('signup/', JWTSignupView.as_view()), # 회원가입
     path('login/', JWTLoginView.as_view()), # 로그인
     path('login/refresh/', TokenRefreshView.as_view()), # 토큰 재발급
-    path('accounts/kakao/accesstoken/', KakaoLoginView.as_view()),
+    path('accounts/kakao/accesstoken/<str:access_token>', KakaoLoginView.as_view()),
 ]

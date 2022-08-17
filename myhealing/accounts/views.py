@@ -1,14 +1,10 @@
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.contrib.auth import login
 from django.core.files.base import ContentFile
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from myhealing.settings import SOCIAL_OUTH_CONFIG
-import requests, json
+import requests
 from .models import User
 from django.contrib.auth import authenticate
 
@@ -68,9 +64,7 @@ class JWTLoginView(APIView):
 ############################################################
 
 class KakaoLoginView(APIView):
-    def get(self, request):   
-        access_token = request.GET.get('access_token', None) # access token 받기
-
+    def get(self, request, access_token):   
         """
         사용자 정보(profile) 요청
         """
