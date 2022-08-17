@@ -55,7 +55,11 @@ class GuideListSerializer(serializers.ModelSerializer):
         return obj.user.nickname
     
     def get_user_profile(self, obj):
-        return obj.user.profile_photo.url
+        try:
+            photo = obj.user.profile_photo.url
+        except:
+            return ""
+        return photo
 
 class RandomGuideSerializer(serializers.ModelSerializer):
     class Meta:
