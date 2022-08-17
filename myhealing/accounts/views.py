@@ -65,35 +65,11 @@ class JWTLoginView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-"""
-인가코드 요청
-"""
-class KakaoSignInView(APIView):
-    def get(self, request):
-        client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
-        redirect_uri = SOCIAL_OUTH_CONFIG['KAKAO_REDIRECT_URI']
-        kakao_auth_api = "https://kauth.kakao.com/oauth/authorize?response_type=code"
-        return redirect(
-            f'{kakao_auth_api}&client_id={client_id}&redirect_uri={redirect_uri}'
-        )
+############################################################
 
-
-class KakaoCallBackView(APIView):
-    def get(self, request):
-        auth_code = request.GET.get('code')
-        client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
-        redirect_uri = SOCIAL_OUTH_CONFIG['KAKAO_REDIRECT_URI']
-       
-        """
-        토큰 요청
-        """
-        token_req = requests.get(f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={client_id}&redirect_uri={redirect_uri}&code={auth_code}')
-        token_json = token_req.json()
-        error = token_json.get('error')
-        if error is not None:
-            raise json.JSONDecodeError(error)
-
-        access_token = token_json.get('access_token') # access token 추출
+class KakaoLoginView(APIView):
+    def get(self, request):   
+        access_token = request.GET.get('access_token', None) # access token 받기
 
         """
         사용자 정보(profile) 요청
