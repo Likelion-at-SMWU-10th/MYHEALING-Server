@@ -68,19 +68,18 @@ class JWTLoginView(APIView):
 """
 인가코드 요청
 """
-class KakaoSignInView(APIView):
-    def get(self, request):
-        client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
-        redirect_uri = SOCIAL_OUTH_CONFIG['KAKAO_REDIRECT_URI']
-        kakao_auth_api = "https://kauth.kakao.com/oauth/authorize?response_type=code"
-        return redirect(
-            f'{kakao_auth_api}&client_id={client_id}&redirect_uri={redirect_uri}'
-        )
+# class KakaoSignInView(APIView):
+#     def get(self, request):
+#         client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
+#         redirect_uri = SOCIAL_OUTH_CONFIG['KAKAO_REDIRECT_URI']
+#         kakao_auth_api = "https://kauth.kakao.com/oauth/authorize?response_type=code"
+#         return redirect(
+#             f'{kakao_auth_api}&client_id={client_id}&redirect_uri={redirect_uri}'
+#         )
 
 
 class KakaoCallBackView(APIView):
-    def get(self, request):
-        auth_code = request.GET.get('code')
+    def get(self, request, auth_code):
         client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
         redirect_uri = SOCIAL_OUTH_CONFIG['KAKAO_REDIRECT_URI']
        
@@ -144,5 +143,6 @@ class KakaoCallBackView(APIView):
         )
         res.set_cookie("access", jwt_access_token, httponly=True)
         res.set_cookie("refresh", jwt_refresh_token, httponly=True)
+        
         return res
         # return redirect(reverse('kakaologin')) # redirect page는 추후 변경.
