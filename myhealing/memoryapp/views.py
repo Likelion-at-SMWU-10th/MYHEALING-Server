@@ -16,18 +16,11 @@ import shutil
 class MemoPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
-class MypageMemoryList(APIView, PaginationHandlerMixin):
-    pagination_class = MemoPagination
-    serializer_class = MemoryListSerializer
-
+class MypageMemoryList(APIView):
     def get(self, request):
         memories = Memory.objects.filter(user=request.user).order_by("-created_at")
 
-        page = self.paginate_queryset(memories)
-        if page is not None:
-            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-        else:
-            serializer = self.serializer_class(page, many=True)
+        serializer = MemoryListSerializer(memories, many=True)
         return Response(serializer.data)
 
 
@@ -37,7 +30,6 @@ class MemoryList(APIView, PaginationHandlerMixin):
 
     # /memory
     def get(self, request):
-        # TODO: user_id filter 추후 추가 필요
         memories = Memory.objects.all().order_by("-created_at")
 
         page = self.paginate_queryset(memories)

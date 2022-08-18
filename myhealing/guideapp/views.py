@@ -31,18 +31,10 @@ class GuideHighLove(APIView):
         serializer = GuideSerializer(guides, many=True)
         return Response(serializer.data)
 
-class MypageGuideList(APIView, PaginationHandlerMixin):
-    pagination_class = MemoPagination
-    serializer_class = GuideListSerializer
-
+class MypageGuideList(APIView):
     def get(self, request):
         guides = Guide.objects.filter(user=request.user).order_by("-created_at")
-
-        page = self.paginate_queryset(guides)
-        if page is not None:
-            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-        else:
-            serializer = self.serializer_class(page, many=True)
+        serializer = GuideListSerializer(guides, many=True)
         return Response(serializer.data)
 
 
@@ -236,20 +228,13 @@ class RandomGuideOne(APIView):
                 serializer = RandomGuideSerializer(random_guide)
                 return Response(serializer.data)
 
-class GuideLove(APIView, PaginationHandlerMixin):
-    pagination_class = MemoPagination
-    serializer_class = GuideListSerializer
-    
+class GuideLove(APIView):
     # 내가 찜한 게시글
     def get(self, request):
         guides_loved_pk = Love.objects.filter(user=request.user).values_list('guide', flat=True).order_by("-created_at")
         guides = Guide.objects.filter(pk__in=guides_loved_pk)
 
-        page = self.paginate_queryset(guides)
-        if page is not None:
-            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-        else:
-            serializer = self.serializer_class(page, many=True)
+        serializer = GuideListSerializer(guides, many=True)
         return Response(serializer.data)
 
     # 게시글 찜하기
