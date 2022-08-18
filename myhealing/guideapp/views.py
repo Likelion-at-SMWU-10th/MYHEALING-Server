@@ -199,7 +199,7 @@ class GuideRecommend(APIView, PaginationHandlerMixin):
         for keyword in keywords:
             guides = guides.filter(tag__title=keyword)
         
-        page = self.paginate_queryset(guides)
+        page = self.paginate_queryset(guides.order_by("-created_at"))
         if page is not None:
             serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
         else:
