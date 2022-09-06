@@ -68,16 +68,6 @@ class JWTLoginView(APIView):
 """
 인가코드 요청
 """
-# class KakaoSignInView(APIView):
-#     def get(self, request):
-#         client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
-#         redirect_uri = SOCIAL_OUTH_CONFIG['KAKAO_REDIRECT_URI']
-#         kakao_auth_api = "https://kauth.kakao.com/oauth/authorize?response_type=code"
-#         return redirect(
-#             f'{kakao_auth_api}&client_id={client_id}&redirect_uri={redirect_uri}'
-#         )
-
-
 class KakaoCallBackView(APIView):
     def get(self, request, auth_code):
         client_id = SOCIAL_OUTH_CONFIG['KAKAO_REST_API_KEY']
@@ -100,14 +90,13 @@ class KakaoCallBackView(APIView):
         profile_req = requests.get(
             "https://kapi.kakao.com/v2/user/me", headers={"Authorization":f"Bearer {access_token}"}
         )
-
-        # print(profile_json)    
+   
         profile_json = profile_req.json()
         email = profile_json.get("kakao_account").get("email") # email 값
         properties = profile_json.get("kakao_account").get("profile")
         nickname = properties.get("nickname") # 이름값
         profile_photo = properties.get("profile_image_url") # 프로필 사진
-        # return JsonResponse(data=properties, safe=False)
+
         try: # DB에 email이 존재하는지 확인
             user = User.objects.get(email=email)
         except User.DoesNotExist: # DB에 없다면 계정 생성
@@ -116,7 +105,6 @@ class KakaoCallBackView(APIView):
                 email = email,
                 nickname = nickname,
             )
-            # user.set_unusable_password()
             user.save()
             if profile_photo is not None: # kakao profile에 image가 있다면
                 profile_photo_req = requests.get(profile_photo)
@@ -145,4 +133,3 @@ class KakaoCallBackView(APIView):
         res.set_cookie("refresh", jwt_refresh_token, httponly=True)
         
         return res
-        # return redirect(reverse('kakaologin')) # redirect page는 추후 변경.
