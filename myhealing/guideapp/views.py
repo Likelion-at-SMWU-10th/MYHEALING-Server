@@ -104,8 +104,6 @@ class GuideDetail(APIView):
             sdc['is_writer'] = False
         
         # 유저 정보 검사하여 is Loved 추가
-        # if Love.objects.filter(guide=guide).filter(user=request.user):
-        #     sdc['is_loved'] = True
         if guide.love.filter(user=request.user):
             sdc['is_loved'] = True
         else:
@@ -263,7 +261,7 @@ class GuideLove(APIView):
         love = Love.objects.filter(user=request.user).filter(guide=guide)
         if not love:
             return Response({
-                "message": "DoesNotExist, you might not loved this guide before"
+                "message": "DoesNotExist, you might not love this guide before"
             }, status=status.HTTP_404_NOT_FOUND)
         
         love.delete()
