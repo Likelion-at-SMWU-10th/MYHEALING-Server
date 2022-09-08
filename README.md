@@ -23,7 +23,7 @@ MY_HEALING은 **힐링 플레이스**를 찾는 사람들을 위해 **키워드*
 |`Tool`|VSCode, Notion|
 
 ### ✒️ api 설계 
-- 
+- [📚 click!](https://documenter.getpostman.com/view/18748955/VVBWT5st)
 
 ### 📸 시연 영상
 - [🎥 click!](https://drive.google.com/file/d/1xmaTQziAHwl4NgY2w283t1FlVgwLjdcQ/view?usp=sharing)
