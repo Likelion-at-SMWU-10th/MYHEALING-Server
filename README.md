@@ -1,5 +1,4 @@
 # MYHEALING-Server🌿
-<img width=500 src="https://user-images.githubusercontent.com/98384956/188569615-23d1c955-342d-48d7-beb4-c26a3678646e.jpg">
 
 ### 🌿 나만의 힐링 플레이스 공유 서비스, MY_HEALING
 MY_HEALING은 **힐링 플레이스**를 찾는 사람들을 위해 **키워드**와 **가이드**를 제공하여  
